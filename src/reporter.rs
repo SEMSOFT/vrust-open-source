@@ -1,7 +1,7 @@
 //! Generating a JSON report for all checks.
 
 use std::fmt::Display;
-use std::{fs::File, lazy::SyncLazy, path::Path, sync::Mutex};
+use std::{fs::File, sync::LazyLock, path::Path, sync::Mutex};
 
 use chrono::prelude::*;
 use rustc_hir::def_id::DefId;
@@ -376,4 +376,4 @@ impl Report {
 }
 
 /// Singleton to store all diagnostics.
-pub static REPORT: SyncLazy<Mutex<Report>> = SyncLazy::new(|| Mutex::new(Default::default()));
+pub static REPORT: LazyLock<Mutex<Report>> = LazyLock::new(|| Mutex::new(Default::default()));

@@ -11,7 +11,7 @@ use crate::{
 use hashbrown::HashMap;
 use itertools::Itertools;
 use log::{debug, warn};
-use rustc_hir::{def::DefKind, def_id::DefId, itemlikevisit};
+use rustc_hir::{def::DefKind, def_id::DefId};
 use rustc_middle::{
     mir::{visit::Visitor, BasicBlock, Operand, Place, PlaceRef},
     ty::{AdtDef, List, ParamEnv, ParamEnvAnd, Ty, TyCtxt, TyKind},
@@ -19,33 +19,33 @@ use rustc_middle::{
 use rustc_span::Span;
 
 pub struct TypeVisitor<'tcx> {
-    pub all_struct_defs: Vec<(&'tcx AdtDef, Span)>,
+    pub all_struct_defs: Vec<(&'tcx AdtDef<'tcx>, Span)>,
     pub tcx: TyCtxt<'tcx>,
 }
 
-impl<'hir, 'tcx> itemlikevisit::ItemLikeVisitor<'hir> for TypeVisitor<'tcx> {
-    fn visit_item(&mut self, item: &'hir rustc_hir::Item<'hir>) {
-        let def_id = item.def_id.to_def_id();
-        match self.tcx.def_kind(def_id) {
-            DefKind::Struct => {
-                let adt_def = self.tcx.adt_def(def_id);
-                if adt_def.is_struct() {
-                    if adt_def.all_fields().count() > 0 {
-                        self.all_struct_defs.push((adt_def, item.span));
-                        // debug!("Def code: {}", self.tcx.sess.source_map().span_to_snippet(item.span).unwrap());
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
+// impl<'hir, 'tcx> itemlikevisit::ItemLikeVisitor<'hir> for TypeVisitor<'tcx> {
+//     fn visit_item(&mut self, item: &'hir rustc_hir::Item<'hir>) {
+//         let def_id = item.def_id.to_def_id();
+//         match self.tcx.def_kind(def_id) {
+//             DefKind::Struct => {
+//                 let adt_def = self.tcx.adt_def(def_id);
+//                 if adt_def.is_struct() {
+//                     if adt_def.all_fields().count() > 0 {
+//                         self.all_struct_defs.push((adt_def, item.span));
+//                         // debug!("Def code: {}", self.tcx.sess.source_map().span_to_snippet(item.span).unwrap());
+//                     }
+//                 }
+//             }
+//             _ => {}
+//         }
+//     }
 
-    fn visit_trait_item(&mut self, _trait_item: &'hir rustc_hir::TraitItem<'hir>) {}
+//     fn visit_trait_item(&mut self, _trait_item: &'hir rustc_hir::TraitItem<'hir>) {}
 
-    fn visit_impl_item(&mut self, _impl_item: &'hir rustc_hir::ImplItem<'hir>) {}
+//     fn visit_impl_item(&mut self, _impl_item: &'hir rustc_hir::ImplItem<'hir>) {}
 
-    fn visit_foreign_item(&mut self, _foreign_item: &'hir rustc_hir::ForeignItem<'hir>) {}
-}
+//     fn visit_foreign_item(&mut self, _foreign_item: &'hir rustc_hir::ForeignItem<'hir>) {}
+// }
 
 /// Get all struct types in the current crate.
 fn get_mod_struct_types<'tcx>(tcx: TyCtxt<'tcx>) -> Vec<(&'tcx AdtDef, Span)> {
@@ -59,7 +59,7 @@ fn get_mod_struct_types<'tcx>(tcx: TyCtxt<'tcx>) -> Vec<(&'tcx AdtDef, Span)> {
 
 #[derive(Debug)]
 pub struct StructDefLayout<'tcx> {
-    pub struct_def: &'tcx AdtDef,
+    pub struct_def: &'tcx AdtDef<'tcx>,
     pub layout: Vec<Ty<'tcx>>,
     pub span: Span,
 }

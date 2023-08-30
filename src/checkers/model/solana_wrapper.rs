@@ -1,6 +1,6 @@
 //! Wrappers for soem solana programs
 
-use std::lazy::SyncLazy;
+use std::sync::LazyLock;
 
 use hashbrown::HashMap;
 use rustc_hir::def_id::DefId;
@@ -10,7 +10,7 @@ use crate::wpa::{StateTransitor, StateMachine};
 
 use super::InterceptedFn;
 
-static SOLANA_IDENTITY_FNS: SyncLazy<HashMap<&'static str, InterceptedFn>> = SyncLazy::new(|| {
+static SOLANA_IDENTITY_FNS: LazyLock<HashMap<&'static str, InterceptedFn>> = LazyLock::new(|| {
     let mut map = HashMap::new();
     map.insert(
         "solana_program::account_info::next_account_info",

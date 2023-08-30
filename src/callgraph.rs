@@ -372,7 +372,7 @@ where
     /// Get all the predecessors of the current basic block, and track the dependent
     /// source variables of the branch conditions of the predecessors.
     /// TODO: if the branch condition is from some expressions, do we want to traverse them?
-    fn depends_branch_source(&self, location: Location, body: &Body<'tcx>) -> Vec<CallNode<'tcx>> {
+    fn depends_branch_source<'tcx, 'graph>(&self, location: Location, body: &'graph BasicBlocks<'tcx>) -> Vec<CallNode<'tcx>> {
         let mut nodes = Vec::new();
         for pred in WithPredecessors::predecessors(body, location.block) {
             if let Some(terminator) = body.basic_blocks()[pred].terminator.as_ref() {

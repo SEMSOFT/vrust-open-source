@@ -4,7 +4,7 @@
 //! Instead of intercepting all these intrinsics, we directly intercept the functions
 //! like core::slice::iter.
 
-use std::lazy::SyncLazy;
+use std::sync::LazyLock;
 
 use hashbrown::HashMap;
 use log::debug;
@@ -15,7 +15,7 @@ use crate::wpa::{StateTransitor, StateMachine};
 
 use super::InterceptedFn;
 
-static STD_IDENTITY_FNS: SyncLazy<HashMap<&'static str, InterceptedFn>> = SyncLazy::new(|| {
+static STD_IDENTITY_FNS: LazyLock<HashMap<&'static str, InterceptedFn>> = LazyLock::new(|| {
     let mut map = HashMap::new();
     map.insert(
         "core::slice::<impl [T]>::iter",

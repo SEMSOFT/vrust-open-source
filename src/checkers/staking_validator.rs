@@ -60,7 +60,7 @@ impl core::fmt::Debug for StakingValidator {
 fn is_pubkey<'tcx>(place: PlaceRef<'tcx>, body: &Body<'tcx>, tcx: TyCtxt<'tcx>) -> bool {
     let ty = place.ty(body, tcx).ty.peel_refs();
     if let TyKind::Adt(adt_def, _substs) = ty.kind() {
-        let ty_str = tcx.def_path_str(adt_def.did);
+        let ty_str = tcx.def_path_str(adt_def.did());
         if ty_str == PUBKEY {
             return true;
         }

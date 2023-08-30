@@ -65,7 +65,7 @@ impl OwnerCheck {
 fn is_pubkey<'tcx>(ty: Ty<'tcx>, tcx: TyCtxt<'tcx>) -> bool {
     let ty = ty.peel_refs();
     if let TyKind::Adt(adt_def, _substs) = ty.kind() {
-        let ty_str = tcx.def_path_str(adt_def.did);
+        let ty_str = tcx.def_path_str(adt_def.did());
         if ty_str == PUBKEY {
             return true;
         }
@@ -104,7 +104,7 @@ fn parse_field_names<'tcx>(
             PlaceElem::Field(field, _field_ty) => {
                 let ty = base.ty(body, tcx).ty.peel_refs();
                 if let Some(adt_def) = ty.ty_adt_def() {
-                    let ty_str = tcx.def_path_str(adt_def.did);
+                    let ty_str = tcx.def_path_str(adt_def.did());
                     let all_fields: Vec<&FieldDef> = adt_def.all_fields().collect();
                     res.push((base, ty_str, all_fields[field.index()].name));
                 }
@@ -120,7 +120,7 @@ fn is_owner_field<'tcx>(place: PlaceRef<'tcx>, body: &Body<'tcx>, tcx: TyCtxt<'t
     let base = Place::from(place.local);
     let ty = base.ty(body, tcx).ty;
     if let TyKind::Adt(adt_def, _substs) = ty.kind() {
-        let ty_str = tcx.def_path_str(adt_def.did);
+        let ty_str = tcx.def_path_str(adt_def.did());
         // if ty_str == ACC_INFO {
         let fields = get_all_fields(adt_def, place.projection);
         // TODO: we need to check if the parent object of the data fields is AccountInfo
@@ -292,7 +292,7 @@ impl<'tcx> StateTransitor<'tcx> for OwnerCheck {
         if body.arg_count >= 1 {
             let arg = &body.local_decls[1u32.into()];
             if let TyKind::Adt(adt_def, _substs) = arg.ty.kind() {
-                let ty_str = tcx.def_path_str(adt_def.did);
+                let ty_str = tcx.def_path_str(adt_def.did());
                 if ty_str == CONTEXT {
                     return true;
                 }
@@ -302,7 +302,7 @@ impl<'tcx> StateTransitor<'tcx> for OwnerCheck {
             let arg = &body.local_decls[arg_i];
             if let TyKind::Slice(element_ty) = arg.ty.peel_refs().kind() {
                 if let TyKind::Adt(adt_def, _) = element_ty.kind() {
-                    let ty_str = tcx.def_path_str(adt_def.did);
+                    let ty_str = tcx.def_path_str(adt_def.did());
                     if ty_str == ACCOUNT_TY {
                         return true;
                     }
@@ -341,7 +341,7 @@ impl<'tcx> StateTransitor<'tcx> for OwnerCheck {
             if body.arg_count >= 1 {
                 let arg = &body.local_decls[1u32.into()];
                 if let TyKind::Adt(adt_def, substs) = arg.ty.kind() {
-                    let ty_str = tcx.def_path_str(adt_def.did);
+                    let ty_str = tcx.def_path_str(adt_def.did());
                     if ty_str == CONTEXT {
                         let (account_ty, _) = get_last_generic_subst(substs).unwrap();
                         // debug!("Check account ty: {}", tcx.def_path_str(account_ty.did));
@@ -349,7 +349,7 @@ impl<'tcx> StateTransitor<'tcx> for OwnerCheck {
                         let mut checked = false;
                         tcx.for_each_relevant_impl(
                             trait_id,
-                            tcx.type_of(account_ty.did),
+                            tcx.type_of(account_ty.did()),
                             |impl_id| {
                                 if let Some(assoc_item) = tcx
                                     .associated_items(impl_id)
@@ -412,7 +412,7 @@ fn get_last_generic_subst<'tcx>(
 ) -> Option<(&'tcx AdtDef, SubstsRef<'tcx>)> {
     if let GenericArgKind::Type(ty) = substs.last().unwrap().unpack() {
         if let TyKind::Adt(adt_def, substs) = ty.kind() {
-            return Some((*adt_def, *substs));
+            return Some((adt_def, substs));
         }
     }
     None

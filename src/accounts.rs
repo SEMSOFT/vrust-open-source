@@ -12,8 +12,8 @@ pub const ACCOUNT_TY: &'static str = "anchor_lang::Account";
 
 #[derive(Debug)]
 pub struct CtxWrappedAccounts<'tcx> {
-    pub adt_def: &'tcx AdtDef,
-    pub fields: Vec<(Ty<'tcx>, Ident, Option<&'tcx AdtDef>)>
+    pub adt_def: &'tcx AdtDef<'tcx>,
+    pub fields: Vec<(Ty<'tcx>, Ident, Option<&'tcx AdtDef<'tcx>>)>
 }
 
 fn get_last_generic_subst<'tcx>(substs: SubstsRef<'tcx>) -> Option<(&'tcx AdtDef, SubstsRef<'tcx>)> {
@@ -79,10 +79,10 @@ pub fn print_all_wrapped_accounts<'tcx>(tcx: TyCtxt<'tcx>, account_adts: &[CtxWr
 
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub enum AccountRole<'tcx> {
-    Onwer(Ident, Option<&'tcx AdtDef>),
-    Signer(Ident, Option<&'tcx AdtDef>),
-    Sender(Vec<(Ident, Option<&'tcx AdtDef>)>),
-    Receiver(Vec<(Ident, Option<&'tcx AdtDef>)>),
+    Onwer(Ident, Option<&'tcx AdtDef<'tcx>>),
+    Signer(Ident, Option<&'tcx AdtDef<'tcx>>),
+    Sender(Vec<(Ident, Option<&'tcx AdtDef<'tcx>>)>),
+    Receiver(Vec<(Ident, Option<&'tcx AdtDef<'tcx>>)>),
 }
 
 /// In anchor Context<T>, each T corresponds to a function, e.g., deposit, withdraw, etc.
