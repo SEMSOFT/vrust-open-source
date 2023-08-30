@@ -9,8 +9,8 @@ RUN apt-get update \
     && apt-get install -y python3.9 python3-pip python3.9-distutils
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y \
     && PATH="/root/.cargo/bin:${PATH}" \
-    && rustup install nightly-2022-02-24 \
-    && rustup default nightly-2022-02-24 \
+    && rustup install nightly-2022-08-06 \
+    && rustup default nightly-2022-08-06 \
     && rustup component add rust-src \
     && rustup component add rustc-dev \
     && rustup component add llvm-tools-preview \
